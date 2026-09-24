@@ -1,0 +1,23 @@
+{
+    "DATE": true,
+    "VOUCHERTYPENAME": true,
+    "VOUCHERNUMBER": true,
+    "REFERENCE": true,
+    "ALLINVENTORYENTRIES.LIST": {
+        "STOCKITEMNAME": true,
+        "RATE": true,
+        "AMOUNT": true,
+        "ACTUALQTY": true,
+        "BILLEDQTY": true,
+        "BATCHALLOCATIONS.LIST": {
+            "MFDON": true,
+            "GODOWNNAME": true,
+            "BATCHNAME": true,
+            "DESTINATIONGODOWNNAME": true,
+            "ACTUALQTY": true,
+            "BILLEDQTY": true,
+            "RATE": true,
+            "AMOUNT": true
+        }
+    }
+}

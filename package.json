@@ -1,0 +1,45 @@
+{
+  "name": "tally-clean-reponse",
+  "version": "1.1.1",
+  "description": "Simple, clean TDL and XML extraction and manipulation tools for Tally",
+  "type": "module",
+  "main": "src/index.js",
+  "module": "./src/index.js",
+  "types": "index.d.ts",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./src/index.js",
+      "default": "./src/index.js"
+    },
+    "./v1": {
+      "types": "./index.d.ts",
+      "import": "./src/v1/index.js",
+      "default": "./src/v1/index.js"
+    },
+    "./v2": {
+      "types": "./index.d.ts",
+      "import": "./src/v2/index.js",
+      "default": "./src/v2/index.js"
+    }
+  },
+  "files": [
+    "src",
+    "index.d.ts",
+    "README.md",
+    "LICENSE"
+  ],
+  "homepage": "https://keshavsoft.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/keshavsoft/tally-clean-reponse"
+  },
+  "bugs": {
+    "url": "https://github.com/keshavsoft/tally-clean-reponse/issues"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "tally-to-xml-tdl": "^1.6.1"
+  }
+}

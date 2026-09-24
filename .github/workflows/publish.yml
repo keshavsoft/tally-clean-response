@@ -1,0 +1,74 @@
+name: Publish to npm
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Check package version against registry
+        id: check_version
+        run: |
+          node -e "
+          const fs = require('fs');
+          const { execSync } = require('child_process');
+
+          const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
+          const name = pkg.name;
+          const localVersion = pkg.version;
+
+          let registryVersion = '0.0.0';
+          try {
+            registryVersion = execSync('npm view ' + name + ' version', { encoding: 'utf8' }).trim();
+          } catch (e) {
+            console.log('Package ' + name + ' not found on registry. Defaulting to 0.0.0.');
+          }
+
+          function parseSemver(v) {
+            const parts = v.split('-')[0].split('.').map(Number);
+            return {
+              major: parts[0] || 0,
+              minor: parts[1] || 0,
+              patch: parts[2] || 0
+            };
+          }
+
+          function isLocalNewer(local, registry) {
+            const l = parseSemver(local);
+            const r = parseSemver(registry);
+            if (l.major !== r.major) return l.major > r.major;
+            if (l.minor !== r.minor) return l.minor > r.minor;
+            return l.patch > r.patch;
+          }
+
+          console.log('Local version: ' + localVersion);
+          console.log('Registry version: ' + registryVersion);
+
+          if (isLocalNewer(localVersion, registryVersion)) {
+            console.log('Local version is newer. Proceeding with publish.');
+          } else {
+            console.error('::error::Local version (' + localVersion + ') is not newer than registry version (' + registryVersion + '). Stopping workflow.');
+            process.exit(1);
+          }
+          "
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Publish to npm
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
