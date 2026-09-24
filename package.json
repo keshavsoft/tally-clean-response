@@ -1,7 +1,7 @@
 {
-  "name": "tally-clean-reponse",
-  "version": "1.1.1",
-  "description": "Simple, clean TDL and XML extraction and manipulation tools for Tally",
+  "name": "tally-clean-response",
+  "version": "1.2.1",
+  "description": "Clean, sanitize, and normalize raw JSON from Tally ERP 9 and TallyPrime XML responses into plain JavaScript objects",
   "type": "module",
   "main": "src/index.js",
   "module": "./src/index.js",
@@ -30,13 +30,29 @@
     "README.md",
     "LICENSE"
   ],
-  "homepage": "https://keshavsoft.com",
+  "scripts": {
+    "test": "node Test/test.js"
+  },
+  "keywords": [
+    "tally",
+    "tally-prime",
+    "tally-erp9",
+    "tdl",
+    "xml-to-json",
+    "clean",
+    "sanitize",
+    "normalize",
+    "fast-xml-parser"
+  ],
+  "author": "KeshavSoft",
+  "license": "MIT",
+  "homepage": "https://keshavsoft.github.io/tally-clean-response/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/keshavsoft/tally-clean-reponse"
+    "url": "https://github.com/keshavsoft/tally-clean-response"
   },
   "bugs": {
-    "url": "https://github.com/keshavsoft/tally-clean-reponse/issues"
+    "url": "https://github.com/keshavsoft/tally-clean-response/issues"
   },
   "dependencies": {},
   "devDependencies": {

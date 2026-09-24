@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Architecture &amp; Recipes Guide — tally-clean-response</title>
+  <meta name="description" content="Internal architecture, recursive tree dispatcher, guard logic, and practical real-world recipes for tally-clean-response.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 18 22 12 16 6"></polyline>
+            <polyline points="8 6 2 12 8 18"></polyline>
+          </svg>
+        </div>
+        <div class="brand-title">
+          <span>tally-clean-response</span>
+          <span class="version-badge">v1.2.1</span>
+        </div>
+      </a>
+
+      <!-- Navigation Tabs -->
+      <nav class="nav-links">
+        <a href="index.html" class="nav-link" title="README and Overview">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          </svg>
+          README (Overview)
+        </a>
+        <a href="guide.html" class="nav-link active" title="Architecture & Examples Guide">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+          Architecture &amp; Recipes
+        </a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="quick-install-pill" title="Click to copy install command">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          <span class="install-text">npm i tally-clean-response</span>
+        </button>
+        <a href="https://github.com/keshavsoft/tally-clean-response" target="_blank" rel="noopener" class="nav-icon-link" title="GitHub Repository">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container with Sidebar -->
+  <main class="page-wrapper">
+    <div class="doc-guide-layout">
+
+      <!-- Sticky Left Sidebar (Table of Contents) -->
+      <aside class="guide-sidebar">
+        <div class="sidebar-title">Architecture</div>
+        <nav class="sidebar-nav">
+          <a href="#pipeline" class="active">Pipeline Overview</a>
+          <a href="#collection-extraction">Collection Normalization</a>
+          <a href="#recursive-dispatcher">Recursive Dispatcher</a>
+          <a href="#leaf-unboxing">Leaf Unboxing (alterLeaf)</a>
+          <a href="#nested-traversal">Nested Collections</a>
+        </nav>
+
+        <div class="sidebar-title" style="margin-top: 20px;">Recipes</div>
+        <nav class="sidebar-nav">
+          <a href="#recipe-vouchers">1. Vouchers + Inventory</a>
+          <a href="#recipe-masters">2. Master Catalogs</a>
+          <a href="#recipe-fast-xml">3. Raw Fast-XML-Parser</a>
+          <a href="#recipe-express">4. Express REST API</a>
+          <a href="#recipe-typescript">5. TypeScript Typing</a>
+        </nav>
+      </aside>
+
+      <!-- Main Guide Content -->
+      <article class="guide-content">
+
+        <!-- Top Breadcrumb / Return Link -->
+        <div style="margin-bottom: 20px;">
+          <a href="index.html" style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.86rem; color: var(--accent-emerald-light); text-decoration: none; font-weight: 500;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            Back to README (Overview)
+          </a>
+        </div>
+
+        <header class="hero" style="border-bottom: none; margin-bottom: 16px; padding-bottom: 0;">
+          <div class="hero-tagline">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"></circle></svg>
+            Architecture &amp; Recipes Guide
+          </div>
+          <h1>Internals &amp; Real-World Recipes</h1>
+          <p class="hero-subtitle">
+            Deep dive into the recursive normalization engine and practical integration patterns for production Node.js applications.
+          </p>
+        </header>
+
+        <hr style="border: none; border-top: 1px solid var(--border); margin: 24px 0 36px 0;">
+
+        <!-- 1. Pipeline Overview -->
+        <section class="section" id="pipeline">
+          <h2 class="section-heading">
+            1. Pipeline Overview
+            <a href="#pipeline" class="anchor-link">#</a>
+          </h2>
+          <p>
+            The transformation pipeline converts deeply nested, XML-serialized Tally data into a predictable JavaScript array of objects through 3 core phases:
+          </p>
+
+          <div class="flow-diagram">
+            <div class="flow-pipeline-bar" style="justify-content: flex-start;">
+              <span>Raw JSON</span>
+              <span class="arrow">&rarr;</span>
+              <span class="active">Collection Extractor</span>
+              <span class="arrow">&rarr;</span>
+              <span>Array Normalizer</span>
+              <span class="arrow">&rarr;</span>
+              <span class="active">Recursive Dispatcher</span>
+              <span class="arrow">&rarr;</span>
+              <span>Pristine Array</span>
+            </div>
+          </div>
+
+          <ol class="step-list">
+            <li><strong>Data Root Discovery:</strong> Drills into <code>json?.ENVELOPE?.BODY?.DATA?.COLLECTION</code>. If empty or missing, returns an empty array safely.</li>
+            <li><strong>Single Record Normalization:</strong> If Tally returned a single object instead of an array, it automatically wraps it into a 1-element array.</li>
+            <li><strong>Recursive Tree Dispatching:</strong> The engine walks every key, array, and object deeply, unwrapping <code>#text</code> and stripping <code>@_TYPE</code> at every level.</li>
+          </ol>
+        </section>
+
+        <!-- 2. Collection Extraction -->
+        <section class="section" id="collection-extraction">
+          <h2 class="section-heading">
+            2. Collection Extraction &amp; Array Normalization
+            <a href="#collection-extraction" class="anchor-link">#</a>
+          </h2>
+          <p>
+            Tally XML parsers produce objects when a collection has only 1 child, but arrays when it has &gt;1 children. This is the #1 cause of bugs when integrating with Tally.
+          </p>
+          <p>
+            <code>src/v2/index.js</code> automatically detects single-child collections and normalizes them:
+          </p>
+
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-lang-tag"><span class="dot"></span>javascript &bull; src/v2/index.js</div>
+              <button class="copy-btn" type="button">Copy</button>
+            </div>
+            <pre><code><span class="syn-comment">// Normalize single-record collection to an Array</span>
+<span class="syn-kw">const</span> originalKeys = Object.<span class="syn-fn">keys</span>(collection);
+
+<span class="syn-kw">if</span> (originalKeys.length === 1 &amp;&amp; !Array.<span class="syn-fn">isArray</span>(collection[originalKeys[0]])) {
+  collection[originalKeys[0]] = [collection[originalKeys[0]]];
+}</code></pre>
+          </div>
+
+          <p>
+            It then uses <code>pullKey()</code> to dynamically locate the primary record array without hardcoding entity names:
+          </p>
+
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-lang-tag"><span class="dot"></span>javascript</div>
+              <button class="copy-btn" type="button">Copy</button>
+            </div>
+            <pre><code><span class="syn-kw">const</span> [key, rows] = Object.<span class="syn-fn">entries</span>(collection).<span class="syn-fn">find</span>(
+  ([key, value]) =&gt; !key.<span class="syn-fn">startsWith</span>(<span class="syn-str">"@"</span>) &amp;&amp; Array.<span class="syn-fn">isArray</span>(value)
+) ?? [];</code></pre>
+          </div>
+        </section>
+
+        <!-- 3. Recursive Dispatcher -->
+        <section class="section" id="recursive-dispatcher">
+          <h2 class="section-heading">
+            3. Recursive Dispatcher &amp; Guards
+            <a href="#recursive-dispatcher" class="anchor-link">#</a>
+          </h2>
+          <p>
+            The tree walker in <code>src/v2/changeType/v1/</code> uses functional guard predicates to avoid runtime exceptions:
+          </p>
+
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-lang-tag"><span class="dot"></span>javascript &bull; traverse.js</div>
+              <button class="copy-btn" type="button">Copy</button>
+            </div>
+            <pre><code><span class="syn-kw">const</span> traverse = ({ inData }) =&gt; {
+  <span class="syn-kw">if</span> (<span class="syn-fn">isNullOrUndefined</span>({ inData })) <span class="syn-kw">return</span> inData;
+  <span class="syn-kw">if</span> (<span class="syn-fn">isTallyType</span>({ inData })) <span class="syn-kw">return</span> <span class="syn-fn">alterLeaf</span>({ inValue: inData });
+  <span class="syn-kw">if</span> (<span class="syn-fn">isArray</span>({ inData })) <span class="syn-kw">return</span> <span class="syn-fn">forArray</span>({ inDataAsArray: inData });
+  <span class="syn-kw">if</span> (<span class="syn-fn">isObject</span>({ inData })) <span class="syn-kw">return</span> <span class="syn-fn">forObject</span>({ inDataAsObject: inData });
+  <span class="syn-kw">return</span> inData;
+};</code></pre>
+          </div>
+        </section>
+
+        <!-- 4. Leaf Unboxing -->
+        <section class="section" id="leaf-unboxing">
+          <h2 class="section-heading">
+            4. Leaf Unboxing (alterLeaf.js)
+            <a href="#leaf-unboxing" class="anchor-link">#</a>
+          </h2>
+          <p>
+            When a node contains an <code>@_TYPE</code> property, <code>alterLeaf</code> inspects the type:
+          </p>
+          <ul class="step-list">
+            <li><strong>Empty node handling:</strong> If <code>#text</code> is missing (e.g. <code>&lt;ALLINVENTORYENTRIES.LIST TYPE="String"/&gt;</code>), returns an empty string <code>""</code>.</li>
+            <li><strong>Primitive extraction:</strong> Unboxes <code>#text</code> and casts based on type (String, Date, Logical, Number, Rate, Amount).</li>
+          </ul>
+        </section>
+
+        <!-- 5. Nested Collections -->
+        <section class="section" id="nested-traversal">
+          <h2 class="section-heading">
+            5. Deep Nested Collections
+            <a href="#nested-traversal" class="anchor-link">#</a>
+          </h2>
+          <p>
+            Vouchers in Tally have multi-tier nested arrays, such as:
+          </p>
+          <div class="file-tree">
+            <div><span class="dir">VOUCHER</span></div>
+            <div>&nbsp;&nbsp;&boxur;&minus;&minus; <span class="dir">ALLINVENTORYENTRIES.LIST[]</span></div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;&boxur;&minus;&minus; <span class="file">STOCKITEMNAME</span></div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;&boxur;&minus;&minus; <span class="dir">BATCHALLOCATIONS.LIST[]</span></div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&boxur;&minus;&minus; <span class="file">BATCHNAME</span></div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&boxur;&minus;&minus; <span class="file">AMOUNT</span></div>
+          </div>
+          <p>
+            <code>tally-clean-response</code> recurses through every level. <code>ALLINVENTORYENTRIES.LIST</code> and all inner <code>BATCHALLOCATIONS.LIST</code> entries are completely unwrapped into standard JavaScript arrays of objects.
+          </p>
+        </section>
+
+        <hr style="border: none; border-top: 1px solid var(--border); margin: 40px 0;">
+
+        <!-- Recipes Section -->
+        <h2 style="font-size: 1.8rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 24px; color: var(--text-main);">
+          Production Recipes
+        </h2>
+
+        <!-- Recipe 1 -->
+        <section class="section" id="recipe-vouchers">
+          <h3 class="sub-heading">Recipe 1: Vouchers with Nested Inventory Entries</h3>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-lang-tag"><span class="dot"></span>javascript</div>
+              <button class="copy-btn" type="button">Copy</button>
+            </div>
+            <pre><code><span class="syn-kw">import</span> { vouchers } <span class="syn-kw">from</span> <span class="syn-str">"tally-to-xml-tdl"</span>;
+<span class="syn-kw">import</span> cleanTallyResponse <span class="syn-kw">from</span> <span class="syn-str">"tally-clean-response"</span>;
+
+<span class="syn-kw">const</span> raw = <span class="syn-kw">await</span> vouchers.purchases.<span class="syn-fn">period</span>(<span class="syn-str">"MyCompany"</span>, <span class="syn-str">"1-Apr-2026"</span>, <span class="syn-str">"30-Apr-2026"</span>);
+<span class="syn-kw">const</span> purchases = <span class="syn-fn">cleanTallyResponse</span>(raw);
+
+<span class="syn-kw">for</span> (<span class="syn-kw">const</span> vch <span class="syn-kw">of</span> purchases) {
+  console.<span class="syn-fn">log</span>(`Voucher #${vch.VOUCHERNUMBER} on ${vch.DATE}`);
+  <span class="syn-kw">if</span> (Array.<span class="syn-fn">isArray</span>(vch[<span class="syn-str">"ALLINVENTORYENTRIES.LIST"</span>])) {
+    <span class="syn-kw">for</span> (<span class="syn-kw">const</span> item <span class="syn-kw">of</span> vch[<span class="syn-str">"ALLINVENTORYENTRIES.LIST"</span>]) {
+      console.<span class="syn-fn">log</span>(`  - ${item.STOCKITEMNAME} &bull; ${item.RATE} &bull; Amount: ${item.AMOUNT}`);
+    }
+  }
+}</code></pre>
+          </div>
+        </section>
+
+        <!-- Recipe 2 -->
+        <section class="section" id="recipe-masters">
+          <h3 class="sub-heading">Recipe 2: Master Catalogs (Ledgers, Stock, Units)</h3>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-lang-tag"><span class="dot"></span>javascript</div>
+              <button class="copy-btn" type="button">Copy</button>
+            </div>
+            <pre><code><span class="syn-kw">import</span> { masters } <span class="syn-kw">from</span> <span class="syn-str">"tally-to-xml-tdl"</span>;
+<span class="syn-kw">import</span> cleanTallyResponse <span class="syn-kw">from</span> <span class="syn-str">"tally-clean-response"</span>;
+
+<span class="syn-comment">// Fetch Units of Measure</span>
+<span class="syn-kw">const</span> rawUom = <span class="syn-kw">await</span> masters.<span class="syn-fn">get</span>(<span class="syn-str">"MyCompany"</span>, <span class="syn-str">"uom"</span>);
+<span class="syn-kw">const</span> units = <span class="syn-fn">cleanTallyResponse</span>(rawUom);
+
+<span class="syn-comment">// Fetch Stock Items</span>
+<span class="syn-kw">const</span> rawStock = <span class="syn-kw">await</span> masters.<span class="syn-fn">get</span>(<span class="syn-str">"MyCompany"</span>, <span class="syn-str">"stockItems"</span>);
+<span class="syn-kw">const</span> stockItems = <span class="syn-fn">cleanTallyResponse</span>(rawStock);</code></pre>
+          </div>
+        </section>
+
+        <!-- Recipe 3 -->
+        <section class="section" id="recipe-fast-xml">
+          <h3 class="sub-heading">Recipe 3: Direct Fast-XML-Parser Pipeline</h3>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-lang-tag"><span class="dot"></span>javascript</div>
+              <button class="copy-btn" type="button">Copy</button>
+            </div>
+            <pre><code><span class="syn-kw">import</span> { XMLParser } <span class="syn-kw">from</span> <span class="syn-str">"fast-xml-parser"</span>;
+<span class="syn-kw">import</span> cleanTallyResponse <span class="syn-kw">from</span> <span class="syn-str">"tally-clean-response"</span>;
+
+<span class="syn-kw">const</span> parser = <span class="syn-kw">new</span> <span class="syn-fn">XMLParser</span>({
+  ignoreAttributes: <span class="syn-kw">false</span>,
+  attributeNamePrefix: <span class="syn-str">"@_"</span>,
+  textNodeName: <span class="syn-str">"#text"</span>
+});
+
+<span class="syn-kw">const</span> rawJson = parser.<span class="syn-fn">parse</span>(rawXmlStringFromTally);
+<span class="syn-kw">const</span> records = <span class="syn-fn">cleanTallyResponse</span>(rawJson);</code></pre>
+          </div>
+        </section>
+
+        <!-- Recipe 4 -->
+        <section class="section" id="recipe-express">
+          <h3 class="sub-heading">Recipe 4: Express REST API Endpoint</h3>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-lang-tag"><span class="dot"></span>javascript</div>
+              <button class="copy-btn" type="button">Copy</button>
+            </div>
+            <pre><code><span class="syn-kw">import</span> express <span class="syn-kw">from</span> <span class="syn-str">"express"</span>;
+<span class="syn-kw">import</span> { vouchers } <span class="syn-kw">from</span> <span class="syn-str">"tally-to-xml-tdl"</span>;
+<span class="syn-kw">import</span> cleanTallyResponse <span class="syn-kw">from</span> <span class="syn-str">"tally-clean-response"</span>;
+
+<span class="syn-kw">const</span> app = <span class="syn-fn">express</span>();
+
+app.<span class="syn-fn">get</span>(<span class="syn-str">"/api/vouchers/purchases"</span>, <span class="syn-kw">async</span> (req, res) =&gt; {
+  <span class="syn-kw">try</span> {
+    <span class="syn-kw">const</span> { company, fromDate, toDate } = req.query;
+    <span class="syn-kw">const</span> raw = <span class="syn-kw">await</span> vouchers.purchases.<span class="syn-fn">period</span>(company, fromDate, toDate);
+    <span class="syn-kw">const</span> data = <span class="syn-fn">cleanTallyResponse</span>(raw);
+
+    res.<span class="syn-fn">json</span>({ success: <span class="syn-kw">true</span>, count: data.length, data });
+  } <span class="syn-kw">catch</span> (err) {
+    res.<span class="syn-fn">status</span>(500).<span class="syn-fn">json</span>({ success: <span class="syn-kw">false</span>, error: err.message });
+  }
+});
+
+app.<span class="syn-fn">listen</span>(3000, () =&gt; console.<span class="syn-fn">log</span>(<span class="syn-str">"API running on :3000"</span>));</code></pre>
+          </div>
+        </section>
+
+        <!-- Recipe 5 -->
+        <section class="section" id="recipe-typescript">
+          <h3 class="sub-heading">Recipe 5: Strongly Typed TypeScript</h3>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-lang-tag"><span class="dot"></span>typescript</div>
+              <button class="copy-btn" type="button">Copy</button>
+            </div>
+            <pre><code><span class="syn-kw">import</span> cleanTallyResponse <span class="syn-kw">from</span> <span class="syn-str">"tally-clean-response"</span>;
+
+<span class="syn-kw">interface</span> Voucher {
+  DATE: <span class="syn-kw">string</span>;
+  GUID: <span class="syn-kw">string</span>;
+  VOUCHERTYPENAME: <span class="syn-kw">string</span>;
+  VOUCHERNUMBER: <span class="syn-kw">number</span>;
+  <span class="syn-str">"ALLINVENTORYENTRIES.LIST"</span>?: {
+    STOCKITEMNAME: <span class="syn-kw">string</span>;
+    RATE: <span class="syn-kw">string</span>;
+    AMOUNT: <span class="syn-kw">number</span>;
+  }[];
+  <span class="syn-str">"@_REMOTEID"</span>?: <span class="syn-kw">string</span>;
+}
+
+<span class="syn-kw">const</span> vouchers: Voucher[] = cleanTallyResponse&lt;Voucher&gt;(rawXmlJson);</code></pre>
+          </div>
+        </section>
+
+        <!-- Bottom Return Link -->
+        <div class="crosslink-banner" style="margin-top: 48px;">
+          <div class="crosslink-content">
+            <div class="crosslink-icon">📖</div>
+            <div class="crosslink-text">
+              <h4>Back to README</h4>
+              <p>Return to the main overview, quick start, installation, and type conversion matrix.</p>
+            </div>
+          </div>
+          <a href="index.html" class="btn-pill">
+            &larr; View README
+          </a>
+        </div>
+
+      </article>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div>
+        <span>tally-clean-response</span> &bull; MIT License &bull; <a href="https://keshavsoft.com" target="_blank" rel="noopener" style="color: var(--accent-emerald-light);">keshavsoft.com</a>
+      </div>
+      <div class="footer-links">
+        <a href="index.html">README</a>
+        <a href="guide.html">Architecture Guide</a>
+        <a href="https://github.com/keshavsoft/tally-clean-response" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://www.npmjs.com/package/tally-clean-response" target="_blank" rel="noopener">npm</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="docs.js"></script>
+</body>
+</html>

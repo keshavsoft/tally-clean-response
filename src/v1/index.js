@@ -28,6 +28,10 @@ const startFunc = (json) => {
     let collection = data?.COLLECTION;
     if (showLog) console.log("collection1 : ", collection);
 
+    if (!collection || typeof collection !== "object") {
+        return [];
+    }
+
     const originalKeys = Object.keys(collection);
 
     if (originalKeys.length === 1 && !Array.isArray(collection[originalKeys[0]])) {
@@ -42,13 +46,13 @@ const startFunc = (json) => {
     // console.log("neededArray : ", neededArray[1]);
 
     if (!Array.isArray(neededArray)) {
-        return neededArray;
+        return neededArray ?? [];
     };
 
     const changedArray = changeTypeString(neededArray);
 
-    if (changedArray?.[1]?.["ALLINVENTORYENTRIES.LIST"]?.[0]?.["BATCHALLOCATIONS.LIST"]) {
-        console.log("changedArray=-------- : ", changedArray[1]["ALLINVENTORYENTRIES.LIST"][0]["BATCHALLOCATIONS.LIST"]);
+    if (showLog && changedArray?.[1]?.["ALLINVENTORYENTRIES.LIST"]?.[0]?.["BATCHALLOCATIONS.LIST"]) {
+        console.log("changedArray : ", changedArray[1]["ALLINVENTORYENTRIES.LIST"][0]["BATCHALLOCATIONS.LIST"]);
     };
 
     return changedArray;

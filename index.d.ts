@@ -1,5 +1,5 @@
 /**
- * tally-clean-reponse
+ * tally-clean-response
  * Simple, clean TDL and XML extraction and manipulation tools for Tally.
  *
  * Copyright (c) 2026 KeshavSoft (MIT License)

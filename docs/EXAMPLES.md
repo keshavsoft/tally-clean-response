@@ -1,6 +1,8 @@
 # Examples & Recipes
 
-This guide covers real-world use cases for `tally-clean-reponse`.
+This guide covers real-world use cases for `tally-clean-response`.
+
+← **[Back to README](../README.md)** &bull; 🌐 **[Live Documentation](https://keshavsoft.github.io/tally-clean-response/)** &bull; 📖 **[Architecture & Internals](ARCHITECTURE.md)**
 
 ---
 
@@ -8,7 +10,7 @@ This guide covers real-world use cases for `tally-clean-reponse`.
 
 ```javascript
 import { vouchers } from "tally-to-xml-tdl";
-import cleanTallyResponse from "tally-clean-reponse";
+import cleanTallyResponse from "tally-clean-response";
 
 async function getPurchases() {
   // 1. Fetch raw data for a specific period
@@ -42,7 +44,7 @@ getPurchases();
 
 ```javascript
 import { masters } from "tally-to-xml-tdl";
-import cleanTallyResponse from "tally-clean-reponse";
+import cleanTallyResponse from "tally-clean-response";
 
 async function getMasters() {
   // Fetch units of measure
@@ -68,7 +70,7 @@ If you are querying Tally directly via HTTP POST and receiving raw XML strings:
 ```javascript
 import http from "node:http";
 import { XMLParser } from "fast-xml-parser";
-import cleanTallyResponse from "tally-clean-reponse";
+import cleanTallyResponse from "tally-clean-response";
 
 async function queryTally(xmlRequest) {
   return new Promise((resolve, reject) => {
@@ -134,7 +136,7 @@ async function run() {
 ```javascript
 import express from "express";
 import { vouchers } from "tally-to-xml-tdl";
-import cleanTallyResponse from "tally-clean-reponse";
+import cleanTallyResponse from "tally-clean-response";
 
 const app = express();
 
@@ -164,7 +166,7 @@ app.listen(3000, () => {
 ## 5. TypeScript Usage with Strong Typing
 
 ```typescript
-import cleanTallyResponse from "tally-clean-reponse";
+import cleanTallyResponse from "tally-clean-response";
 
 interface InventoryEntry {
   STOCKITEMNAME: string;

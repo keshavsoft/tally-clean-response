@@ -1,6 +1,8 @@
 # Architecture & Internals
 
-This document details the internal design and processing pipeline of `tally-clean-reponse`.
+This document details the internal design and processing pipeline of `tally-clean-response`.
+
+← **[Back to README](../README.md)** &bull; 🌐 **[Live Documentation](https://keshavsoft.github.io/tally-clean-response/)** &bull; 💡 **[Examples & Recipes](EXAMPLES.md)**
 
 ---
 
